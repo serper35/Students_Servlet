@@ -2,6 +2,8 @@ package org.example.dao.impl;
 
 import org.example.dao.GroupDao;
 import org.example.dao.StudentDao;
+import org.example.dao.mapper.StudentResultSetMapper;
+import org.example.dao.mapper.impl.StudentResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Student;
 import org.example.entity.Groups;
@@ -13,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDaoImpl implements StudentDao {
-
-    private GroupDao groupDao = new GroupDaoImpl();
+    StudentResultSetMapper studentResultSetMapper = new StudentResultSetMapperImpl();
 
 
     @Override
@@ -89,7 +90,7 @@ public class StudentDaoImpl implements StudentDao {
     }
 
     @Override
-    public Student get(long studetnId) {
+    public Student get(long studentId) {
         String get = """
                 SELECT * 
                 FROM student
@@ -99,16 +100,11 @@ public class StudentDaoImpl implements StudentDao {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(get)) {
 
-            statement.setLong(1, studetnId);
+            statement.setLong(1, studentId);
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                long id = resultSet.getLong("id");
-                String name = resultSet.getString("name");
-                int age = resultSet.getInt("age");
-                int groupId = resultSet.getInt("groups_id");
-
-                return new Student(id, name, age, groupId);
+                return studentResultSetMapper.map(resultSet);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении студента из базы данных", e);
@@ -132,12 +128,7 @@ public class StudentDaoImpl implements StudentDao {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                long id = resultSet.getLong("id");
-                String name = resultSet.getString("name");
-                int age = resultSet.getInt("age");
-                int groupId = resultSet.getInt("groups_id");
-
-                students.add(new Student(id, name, age, groupId));
+                students.add(studentResultSetMapper.map(resultSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении студентов из базы данных", e);

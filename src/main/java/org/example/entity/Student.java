@@ -29,8 +29,15 @@ public class Student {
         this.group = groupDao.get(groupId);
     }
 
+    public Student() {
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

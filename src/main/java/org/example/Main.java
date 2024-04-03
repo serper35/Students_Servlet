@@ -23,8 +23,8 @@ public class Main {
 //        groupDao.save(group);
 //        groupDao.delete(2);
 
-//        System.out.println(groupDao.get(2));
-        System.out.println(studentDao.getAll());
+//        System.out.println(groupDao.get(1));
+        System.out.println(studentDao.get(1));
 //        System.out.println(groupDao.getAll());
 
     }

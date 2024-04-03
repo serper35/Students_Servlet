@@ -11,7 +11,6 @@ public class Groups {
 
     private int numberOfStudents;
 
-    private List<Student> students;
 
     public Groups(long id, String faculty, int numberOfStudents) {
         this.id = id;
@@ -22,6 +21,9 @@ public class Groups {
     public Groups(String faculty, int numberOfStudents) {
         this.faculty = faculty;
         this.numberOfStudents = numberOfStudents;
+    }
+
+    public Groups() {
     }
 
     public long getId() {

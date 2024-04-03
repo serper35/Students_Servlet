@@ -1,6 +1,8 @@
 package org.example.dao.impl;
 
 import org.example.dao.GroupDao;
+import org.example.dao.mapper.GroupResultSetMapper;
+import org.example.dao.mapper.impl.GroupResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Groups;
 import java.sql.Connection;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupDaoImpl implements GroupDao {
+    private GroupResultSetMapper groupResultSetMapper = new GroupResultSetMapperImpl();
+
     @Override
     public void save(Groups group) {
         String saveSQL = """
@@ -41,6 +45,7 @@ public class GroupDaoImpl implements GroupDao {
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
+
             preparedStatement.setString(1, group.getFaculty());
             preparedStatement.setInt(2, group.getNumberOfStudents());
             preparedStatement.setLong(3, group.getId());
@@ -88,11 +93,7 @@ public class GroupDaoImpl implements GroupDao {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                int groupId = resultSet.getInt("id");
-                String faculty = resultSet.getString("faculty");
-                int numberOfStudents = resultSet.getInt("number_of_students");
-
-                group = new Groups(groupId, faculty, numberOfStudents);
+                group = groupResultSetMapper.map(resultSet);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении группы из базы данных", e);
@@ -115,11 +116,7 @@ public class GroupDaoImpl implements GroupDao {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                int groupId = resultSet.getInt("id");
-                String faculty = resultSet.getString("faculty");
-                int numberOfStudents = resultSet.getInt("number_of_students");
-
-                groups.add(new Groups(groupId, faculty, numberOfStudents));
+                groups.add(groupResultSetMapper.map(resultSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении групп из базы данных", e);
