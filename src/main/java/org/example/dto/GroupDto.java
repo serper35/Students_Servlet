@@ -1,5 +1,7 @@
 package org.example.dto;
 
+import java.util.Objects;
+
 public class GroupDto {
     private long id;
 
@@ -29,5 +31,18 @@ public class GroupDto {
 
     public void setNumberOfStudents(int numberOfStudents) {
         this.numberOfStudents = numberOfStudents;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        GroupDto groupDto = (GroupDto) object;
+        return id == groupDto.id && numberOfStudents == groupDto.numberOfStudents && Objects.equals(faculty, groupDto.faculty);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, faculty, numberOfStudents);
     }
 }

@@ -15,7 +15,7 @@ import java.io.IOException;
 public class StudentServlet extends HttpServlet {
 
     private StudentService studentService;
-    private static final Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void init() throws ServletException {

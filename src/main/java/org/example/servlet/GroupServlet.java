@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import org.example.dto.GroupDto;
 import org.example.service.GroupService;
 import org.example.service.impl.GroupsServiceImpl;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -60,7 +59,7 @@ public class GroupServlet extends HttpServlet {
 
         groupService.updateGroup(group);
 
-        resp.setStatus(HttpServletResponse.SC_CREATED);
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
@@ -69,6 +68,6 @@ public class GroupServlet extends HttpServlet {
 
         groupService.deleteGroup(id);
 
-        resp.setStatus(HttpServletResponse.SC_ACCEPTED);
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 }

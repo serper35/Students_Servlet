@@ -1,12 +1,10 @@
 package org.example.dao.impl;
 
-import org.example.dao.GroupDao;
 import org.example.dao.StudentDao;
 import org.example.dao.mapper.StudentResultSetMapper;
 import org.example.dao.mapper.impl.StudentResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Student;
-import org.example.entity.Groups;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +14,7 @@ import java.util.List;
 
 public class StudentDaoImpl implements StudentDao {
     StudentResultSetMapper studentResultSetMapper = new StudentResultSetMapperImpl();
+    private ConnectionManager connectionManager = new ConnectionManager();
 
 
     @Override
@@ -26,7 +25,7 @@ public class StudentDaoImpl implements StudentDao {
                 VALUES (?, ?, ?);
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(saveToDb)) {
 
             statement.setString(1, student.getName());
@@ -54,7 +53,7 @@ public class StudentDaoImpl implements StudentDao {
                 where id = ?
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
             PreparedStatement statement = connection.prepareStatement(updateDb)) {
 
             statement.setString(1, student.getName());
@@ -76,7 +75,7 @@ public class StudentDaoImpl implements StudentDao {
                 where id = ?;
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(delete)) {
 
             statement.setLong(1, id);
@@ -97,7 +96,7 @@ public class StudentDaoImpl implements StudentDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(get)) {
 
             statement.setLong(1, studentId);
@@ -122,7 +121,7 @@ public class StudentDaoImpl implements StudentDao {
                 FROM student
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(getAllSQL)) {
 
             ResultSet resultSet = statement.executeQuery();

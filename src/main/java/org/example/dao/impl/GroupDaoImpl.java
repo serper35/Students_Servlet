@@ -15,6 +15,8 @@ import java.util.List;
 public class GroupDaoImpl implements GroupDao {
     private GroupResultSetMapper groupResultSetMapper = new GroupResultSetMapperImpl();
 
+    private ConnectionManager connectionManager = new ConnectionManager();
+
     @Override
     public void save(Groups group) {
         String saveSQL = """
@@ -22,7 +24,7 @@ public class GroupDaoImpl implements GroupDao {
                 values (?, ?)
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(saveSQL)) {
 
             statement.setString(1, group.getFaculty());
@@ -43,7 +45,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
 
             preparedStatement.setString(1, group.getFaculty());
@@ -63,7 +65,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(deleteSQL)) {
 
             statement.setLong(1, id);
@@ -86,7 +88,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE id = ?
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(getSQL)) {
             preparedStatement.setLong(1, id);
 
@@ -110,7 +112,7 @@ public class GroupDaoImpl implements GroupDao {
                 FROM GROUPS
                 """;
 
-        try (Connection connection = ConnectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(getAllSQL)) {
 
             ResultSet resultSet = statement.executeQuery();

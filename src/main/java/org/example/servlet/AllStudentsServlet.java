@@ -2,10 +2,8 @@ package org.example.servlet;
 
 import com.google.gson.Gson;
 import org.example.dto.StudentDto;
-import org.example.service.GroupService;
 import org.example.service.StudentService;
 import org.example.service.impl.StudentServiceImpl;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
