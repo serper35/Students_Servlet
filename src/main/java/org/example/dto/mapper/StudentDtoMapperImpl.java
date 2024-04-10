@@ -6,8 +6,9 @@ import org.example.dto.StudentDto;
 import org.example.entity.Student;
 
 public class StudentDtoMapperImpl implements StudentDtoMapper{
+    String dbProp = "db.properties";
 
-    GroupDao groupDao = new GroupDaoImpl();
+    GroupDao groupDao = new GroupDaoImpl(dbProp);
     @Override
     public Student mapToStudent(StudentDto studentDto) {
         Student student = new Student();

@@ -13,9 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupDaoImpl implements GroupDao {
+
+    private String dbProp;
+
     private GroupResultSetMapper groupResultSetMapper = new GroupResultSetMapperImpl();
 
     private ConnectionManager connectionManager = new ConnectionManager();
+
+    public GroupDaoImpl(String dbProp) {
+        this.dbProp = dbProp;
+    }
 
     @Override
     public void save(Groups group) {
@@ -24,7 +31,7 @@ public class GroupDaoImpl implements GroupDao {
                 values (?, ?)
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(saveSQL)) {
 
             statement.setString(1, group.getFaculty());
@@ -45,7 +52,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement preparedStatement = connection.prepareStatement(updateSQL)) {
 
             preparedStatement.setString(1, group.getFaculty());
@@ -65,7 +72,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(deleteSQL)) {
 
             statement.setLong(1, id);
@@ -88,7 +95,7 @@ public class GroupDaoImpl implements GroupDao {
                 WHERE id = ?
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement preparedStatement = connection.prepareStatement(getSQL)) {
             preparedStatement.setLong(1, id);
 
@@ -112,7 +119,7 @@ public class GroupDaoImpl implements GroupDao {
                 FROM GROUPS
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(getAllSQL)) {
 
             ResultSet resultSet = statement.executeQuery();

@@ -13,15 +13,14 @@ public class ConnectionManager {
 
     private static Connection connection;
 
-    String url;
-    String username;
-    String password;
+    String dbProp = "db.properties";
 
-    public Connection getConnection() throws SQLException {
+
+    public Connection getConnection(String dbProp) throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
                 Properties properties = new Properties();
-                InputStream inputStream = ConnectionManager.class.getClassLoader().getResourceAsStream("db.properties");
+                InputStream inputStream = ConnectionManager.class.getClassLoader().getResourceAsStream(dbProp);
                 properties.load(inputStream);
 
                 String url = properties.getProperty("db.url");
@@ -34,29 +33,5 @@ public class ConnectionManager {
             }
         }
         return connection;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

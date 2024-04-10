@@ -17,10 +17,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith(MockitoExtension.class)
 class GroupDaoImplTest {
+    private String dbProp = "sfdfdb.properties";
+
     @InjectMocks
-    GroupDaoImpl groupDao;
+    GroupDaoImpl groupDao = new GroupDaoImpl(dbProp);
     @Mock
     private Connection connection;
     @Mock
@@ -32,16 +34,17 @@ class GroupDaoImplTest {
     @Mock
     private GroupResultSetMapper groupResultSetMapper;
 
+
     @Test
     void saveTestPositive() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
 
         groupDao.save(group);
 
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setString(1, group.getFaculty());
         verify(preparedStatement, times(1)).setInt(2, group.getNumberOfStudents());
@@ -52,10 +55,10 @@ class GroupDaoImplTest {
     void saveShouldThrowExceptionWhenConnectionIsFailed() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenThrow(new SQLException("Ошибка при сохранении студента в базу данных"));
+        when(connectionManager.getConnection(anyString())).thenThrow(new SQLException("Ошибка при сохранении студента в базу данных"));
 
         assertThrows(RuntimeException.class, () -> groupDao.save(group));
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
     }
     @Test
     void saveShouldThrowExceptionWhenGroupDoesntExist() throws SQLException {
@@ -68,12 +71,12 @@ class GroupDaoImplTest {
     void updateTestPositive() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
 
         groupDao.update(group);
 
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setString(1, group.getFaculty());
         verify(preparedStatement, times(1)).setInt(2, group.getNumberOfStudents());
@@ -85,22 +88,22 @@ class GroupDaoImplTest {
     void updateShouldThrowExceptionWhenUpdatingIsFailing() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenThrow(new SQLException());
+        when(connectionManager.getConnection(anyString())).thenThrow(new SQLException());
 
         assertThrows(RuntimeException.class, () -> groupDao.update(group));
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
     }
 
     @Test
     void deleteTestPositive() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
 
        groupDao.delete(group.getId());
 
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setLong(1, group.getId());
         verify(preparedStatement, times(1)).executeUpdate();
@@ -110,17 +113,17 @@ class GroupDaoImplTest {
     void deleteShouldThrowWhenDeletingIsFailed() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenThrow(new  SQLException());
+        when(connectionManager.getConnection(anyString())).thenThrow(new  SQLException());
 
         assertThrows(RuntimeException.class, () ->groupDao.delete(group.getId()));
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
     }
 
     @Test
     void getTestPositive() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
@@ -130,7 +133,7 @@ class GroupDaoImplTest {
 
         assertNotNull(actual);
         assertEquals(group, actual);
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setLong(1, group.getId());
         verify(preparedStatement, times(1)).executeQuery();
@@ -142,7 +145,7 @@ class GroupDaoImplTest {
     void getShouldReturnNullWhenStudentDoesntExist() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -150,7 +153,7 @@ class GroupDaoImplTest {
         Groups actual = groupDao.get(group.getId());
 
         assertNull(actual);
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setLong(1, group.getId());
         verify(preparedStatement, times(1)).executeQuery();
@@ -163,13 +166,13 @@ class GroupDaoImplTest {
     void getShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error executing query"));
 
         assertThrows(RuntimeException.class, () -> groupDao.get(group.getId()));
 
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).setLong(1, group.getId());
         verify(preparedStatement, times(1)).executeQuery();
@@ -181,7 +184,7 @@ class GroupDaoImplTest {
         Groups group = new Groups(1, "Physical", 10);
         groups.add(group);
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
@@ -191,7 +194,7 @@ class GroupDaoImplTest {
 
         assertNotNull(groups);
         assertEquals(groups, actual);
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).executeQuery();
         verify(resultSet, times(2)).next();
@@ -202,7 +205,7 @@ class GroupDaoImplTest {
     void getAllShouldReturnEmptyList() throws SQLException {
         List<Groups> groups = new ArrayList<>();
 
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -210,7 +213,7 @@ class GroupDaoImplTest {
         List<Groups> actual = groupDao.getAll();
 
         assertEquals(groups.size(), actual.size());
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).executeQuery();
         verify(resultSet, times(1)).next();
@@ -220,12 +223,12 @@ class GroupDaoImplTest {
 
     @Test
     void getAllShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
-        when(connectionManager.getConnection()).thenReturn(connection);
+        when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException());
 
         assertThrows(RuntimeException.class, () -> groupDao.getAll());
-        verify(connectionManager, times(1)).getConnection();
+        verify(connectionManager, times(1)).getConnection(anyString());
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).executeQuery();
     }

@@ -13,8 +13,9 @@ public class Student {
     private int age;
 
     private Groups group;
+    private String dbProp = "db.properties";
 
-    private GroupDao groupDao = new GroupDaoImpl();
+    private GroupDao groupDao = new GroupDaoImpl(dbProp);
 
     public Student(String name, int age, int groupId) {
         this.name = name;

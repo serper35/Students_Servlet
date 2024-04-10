@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GroupsServiceImpl implements GroupService {
-    private GroupDao groupDao = new GroupDaoImpl();
+    private String dbProp = "db.properties";
+    private GroupDao groupDao = new GroupDaoImpl(dbProp);
     private GroupDtoMapper groupDtoMapper = Mappers.getMapper(GroupDtoMapper.class);
 
 

@@ -15,7 +15,11 @@ import java.util.List;
 public class StudentDaoImpl implements StudentDao {
     StudentResultSetMapper studentResultSetMapper = new StudentResultSetMapperImpl();
     private ConnectionManager connectionManager = new ConnectionManager();
+    String dbProp = "db.properties";
 
+    public StudentDaoImpl(String dbProp) {
+        this.dbProp = dbProp;
+    }
 
     @Override
     public void save(Student student) {
@@ -25,7 +29,7 @@ public class StudentDaoImpl implements StudentDao {
                 VALUES (?, ?, ?);
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(saveToDb)) {
 
             statement.setString(1, student.getName());
@@ -53,7 +57,7 @@ public class StudentDaoImpl implements StudentDao {
                 where id = ?
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
             PreparedStatement statement = connection.prepareStatement(updateDb)) {
 
             statement.setString(1, student.getName());
@@ -75,7 +79,7 @@ public class StudentDaoImpl implements StudentDao {
                 where id = ?;
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(delete)) {
 
             statement.setLong(1, id);
@@ -96,7 +100,7 @@ public class StudentDaoImpl implements StudentDao {
                 WHERE ID = ?
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
+        try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(get)) {
 
             statement.setLong(1, studentId);
@@ -118,13 +122,12 @@ public class StudentDaoImpl implements StudentDao {
 
         String getAllSQL = """
                 SELECT id, name, age, groups_id
-                FROM student
+                FROM STUDENT
                 """;
 
-        try (Connection connection = connectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(getAllSQL)) {
-
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = connectionManager.getConnection(dbProp);
+             PreparedStatement statement = connection.prepareStatement(getAllSQL);
+            ResultSet resultSet = statement.executeQuery()){
 
             while (resultSet.next()) {
                 students.add(studentResultSetMapper.map(resultSet));
