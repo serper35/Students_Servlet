@@ -22,6 +22,8 @@ public class GroupDtoMapperImpl implements GroupDtoMapper {
         groupDto.setFaculty(group.getFaculty());
         groupDto.setNumberOfStudents(group.getNumberOfStudents());
         groupDto.setProfessors(group.getProfessors());
+        groupDto.setStudents(group.getStudents());
+
         return groupDto;
     }
 }

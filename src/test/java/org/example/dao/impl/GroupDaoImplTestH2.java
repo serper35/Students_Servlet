@@ -27,6 +27,8 @@ class GroupDaoImplTestH2 {
 
             statement.executeUpdate("CREATE TABLE groups (id INT PRIMARY KEY AUTO_INCREMENT, faculty VARCHAR(255), numberofstudents INT)");
             statement.executeUpdate("CREATE TABLE professors (id bigserial NOT NULL, name varchar(100) NOT NULL, CONSTRAINT professors_pkey PRIMARY KEY (id))");
+            statement.executeUpdate("CREATE TABLE students (id bigserial NOT NULL, name varchar(100) NOT NULL, age int4, group_id int8 NULL," +
+                    "CONSTRAINT students_pkey PRIMARY KEY (id), CONSTRAINT students_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id))");
             statement.executeUpdate("""
                     CREATE TABLE groups_professors (group_id int8 NOT NULL,professor_id int8 NOT NULL,
                     CONSTRAINT groups_professors_pkey PRIMARY KEY (group_id, professor_id),
@@ -144,6 +146,7 @@ class GroupDaoImplTestH2 {
             Statement statement = connection.createStatement();
 
             statement.executeUpdate("DROP TABLE groups_professors");
+            statement.executeUpdate("DROP TABLE students");
             statement.executeUpdate("DROP TABLE groups");
             statement.executeUpdate("DROP TABLE professors");
 

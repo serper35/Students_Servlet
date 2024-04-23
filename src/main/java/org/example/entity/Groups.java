@@ -12,6 +12,7 @@ public class Groups {
 
     private int numberOfStudents;
     private List<Professor> professors = new ArrayList<>();
+    private List<Student> students = new ArrayList<>();
 
 
     public Groups(long id, String faculty, int numberOfStudents) {
@@ -60,6 +61,14 @@ public class Groups {
         this.professors = professors;
     }
 
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -80,6 +89,7 @@ public class Groups {
                 ", faculty='" + faculty + '\'' +
                 ", numberOfStudents=" + numberOfStudents +
                 ", professors=" + professors +
+                ", students=" + students +
                 '}';
     }
 }

@@ -14,6 +14,7 @@ public class GroupDto {
     private int numberOfStudents;
 
     private List<Professor> professors;
+    private List<Student> students;
 
     public long getId() {
         return id;
@@ -45,6 +46,14 @@ public class GroupDto {
 
     public void setProfessors(List<Professor> professors) {
         this.professors = professors;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 
     @Override

@@ -13,21 +13,33 @@ public class Student {
     private int age;
 
     private Groups group;
-    private String dbProp = "db.properties";
-
-    private GroupDao groupDao = new GroupDaoImpl(dbProp);
+//    private String dbProp = "db.properties";
+//
+//    private GroupDao groupDao = new GroupDaoImpl(dbProp);
 
     public Student(String name, int age, int groupId) {
+        String dbProp = "db.properties";
+        GroupDao groupDao = new GroupDaoImpl(dbProp);
+
         this.name = name;
         this.age = age;
         this.group = groupDao.get(groupId);
     }
 
     public Student(long id, String name, int age, int groupId){
+        String dbProp = "db.properties";
+        GroupDao groupDao = new GroupDaoImpl(dbProp);
+
         this.id = id;
         this.name = name;
         this.age = age;
         this.group = groupDao.get(groupId);
+    }
+
+    public Student(long id, String name, int age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
     }
 
     public Student() {

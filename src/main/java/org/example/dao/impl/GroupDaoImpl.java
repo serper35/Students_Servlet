@@ -6,6 +6,7 @@ import org.example.dao.mapper.impl.GroupResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Groups;
 import org.example.entity.Professor;
+import org.example.entity.Student;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -107,7 +108,9 @@ public class GroupDaoImpl implements GroupDao {
                 group = groupResultSetMapper.map(resultSet);
 
                 List<Professor> professors = getProfessorsByGroupId(id);
+                List<Student> students = getStudentsByGroupId(id);
                 group.setProfessors(professors);
+                group.setStudents(students);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении группы из базы данных", e);
@@ -133,7 +136,9 @@ public class GroupDaoImpl implements GroupDao {
                 Groups group = groupResultSetMapper.map(resultSet);
 
                 List<Professor> professors = getProfessorsByGroupId(group.getId());
+                List<Student> students = getStudentsByGroupId(group.getId());
                 group.setProfessors(professors);
+                group.setStudents(students);
 
                 groups.add(group);
             }
@@ -164,5 +169,29 @@ public class GroupDaoImpl implements GroupDao {
             }
         }
         return professorsList;
+    }
+
+    private List<Student> getStudentsByGroupId(long groupId) throws SQLException {
+        List<Student> studentList = new ArrayList<>();
+        String query = """
+                SELECT Students.id, Students.name, Students.age, Students.group_id  FROM Students
+                JOIN Groups ON Students.id = Groups.id
+                WHERE Groups.id = ?
+                """;
+        try (Connection connection = connectionManager.getConnection(dbProp);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, groupId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("id");
+                    String name =resultSet.getString("name");
+                    int age = resultSet.getInt("age");
+                    Student student = new Student(id, name, age);
+
+                    studentList.add(student);
+                }
+            }
+        }
+        return studentList;
     }
 }
