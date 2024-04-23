@@ -2,7 +2,9 @@ package org.example.dao.impl;
 
 import org.example.db.ConnectionManager;
 import org.example.entity.Groups;
+import org.example.entity.Professor;
 import org.junit.jupiter.api.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +12,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class GroupDaoImplTestH2 {
+class ProfessorDaoImplTestH2 {
 
     private String dbProp = "h2.properties";
-
     private ConnectionManager connectionManager;
-    private GroupDaoImpl groupDao;
+    private ProfessorDaoImpl professorDao;
+    private static String name;
 
     @BeforeAll
     public void setupDatabase() {
+        name = "Cole";
         try {
             connectionManager = new ConnectionManager();
 
@@ -42,24 +45,24 @@ class GroupDaoImplTestH2 {
 
     @BeforeEach
     public void setup() {
-        groupDao = new GroupDaoImpl(dbProp);
+        professorDao = new ProfessorDaoImpl(dbProp);
+
+        Professor professor = new Professor();
+        professor.setName(name);
+
+        professorDao.save(professor);
     }
 
     @Test
-    void saveShouldAddGroupToH2Database() {
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-
-        groupDao.save(group);
-        Groups test = groupDao.get(1L);
+    void saveShouldAddProfessorToH2Database() {
+        Professor test = professorDao.get(1L);
 
         assertNotNull(test);
-        assertEquals(group.getFaculty(), test.getFaculty());
+        assertEquals(name, test.getName());
 
         try {
             Connection connection = connectionManager.getConnection(dbProp);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM groups WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM professors WHERE id = ?");
             statement.setLong(1, 1L);
 
             ResultSet resultSet = statement.executeQuery();
@@ -68,68 +71,52 @@ class GroupDaoImplTestH2 {
 
             connection.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при проверке сохранения группы в базу данных", e);
+            throw new RuntimeException("Ошибка при проверке сохранения профессора в базу данных", e);
         }
     }
 
     @Test
     void updateShouldUpdateGroup() {
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-        groupDao.save(group);
 
-        Groups updGroup = new Groups(1, "IT", 15);
-        groupDao.update(updGroup);
+        Professor updProfessor = new Professor(1, "Colle");
+        professorDao.update(updProfessor);
 
-        Groups test = groupDao.get(1L);
+        Professor test = professorDao.get(1L);
 
-        assertEquals(updGroup.getNumberOfStudents(), test.getNumberOfStudents());
-        assertNotEquals(group.getNumberOfStudents(), test.getNumberOfStudents());
+        assertEquals(updProfessor.getName(), test.getName());
+        assertNotEquals(name, test.getName());
     }
 
     @Test
     void deleteShouldDeleteGroup() {
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-        groupDao.save(group);
+        professorDao.delete(1L);
 
-        groupDao.delete(1L);
-
-        assertNull(groupDao.get(1));
+        assertNull(professorDao.get(1));
     }
+
     @Test
     void getShouldReturnGroup() {
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-        groupDao.save(group);
+        Professor actual = professorDao.get(1L);
 
-        Groups actual = groupDao.get(1L);
-
-        assertEquals(group.getFaculty(), actual.getFaculty());
+        assertEquals(name, actual.getName());
     }
 
     @Test
     void getAllShouldReturnAllGroups() {
-        List<Groups> groups = new ArrayList<>();
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-        groups.add(group);
+        List<Professor> professors = new ArrayList<>();
+        Professor professor = new Professor();
+        professor.setName("Cole");
+        professors.add(professor);
 
-        Groups group1 = new Groups();
-        group1.setFaculty("IT");
-        group1.setNumberOfStudents(20);
-        groups.add(group1);
+        Professor professor1 = new Professor();
+        professor1.setName("Dole");
+        professors.add(professor);
+        professorDao.save(professor);
+        professorDao.save(professor1);
 
-        groupDao.save(group);
-        groupDao.save(group1);
+        List<Professor> actual = professorDao.getAll();
 
-        List<Groups> actual = groupDao.getAll();
-
-        assertEquals(groups.size(), actual.size());
+        assertEquals(professors.size(), actual.size());
     }
 
     @Test
@@ -149,7 +136,7 @@ class GroupDaoImplTestH2 {
 
             connection.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при удалении таблицы групп", e);
+            throw new RuntimeException("Ошибка при удалении таблиц", e);
         }
     }
 }

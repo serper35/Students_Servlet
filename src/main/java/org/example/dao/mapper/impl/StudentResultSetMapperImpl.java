@@ -12,7 +12,7 @@ public class StudentResultSetMapperImpl implements StudentResultSetMapper {
         long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         int age = resultSet.getInt("age");
-        int groupId = resultSet.getInt("groups_id");
+        int groupId = resultSet.getInt("group_id");
 
         return new Student(id, name, age, groupId);
     }

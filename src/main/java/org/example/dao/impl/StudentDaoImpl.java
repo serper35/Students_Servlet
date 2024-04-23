@@ -4,6 +4,7 @@ import org.example.dao.StudentDao;
 import org.example.dao.mapper.StudentResultSetMapper;
 import org.example.dao.mapper.impl.StudentResultSetMapperImpl;
 import org.example.db.ConnectionManager;
+import org.example.entity.Groups;
 import org.example.entity.Student;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,6 +18,8 @@ public class StudentDaoImpl implements StudentDao {
     private ConnectionManager connectionManager = new ConnectionManager();
     String dbProp = "db.properties";
 
+    Groups group = new Groups();
+
     public StudentDaoImpl(String dbProp) {
         this.dbProp = dbProp;
     }
@@ -24,10 +27,12 @@ public class StudentDaoImpl implements StudentDao {
     @Override
     public void save(Student student) {
 
+
         String saveToDb = """
-                INSERT INTO student (name, age, groups_id)
+                INSERT INTO students (name, age, group_id)
                 VALUES (?, ?, ?);
                 """;
+
 
         try (Connection connection = connectionManager.getConnection(dbProp);
              PreparedStatement statement = connection.prepareStatement(saveToDb)) {
@@ -37,7 +42,6 @@ public class StudentDaoImpl implements StudentDao {
             statement.setLong(3, student.getGroup().getId());
 
             statement.executeUpdate();
-
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при сохранении студента в базу данных", e);
         } catch (NullPointerException e) {
@@ -50,10 +54,10 @@ public class StudentDaoImpl implements StudentDao {
 
 
         String updateDb = """
-                UPDATE student
+                UPDATE students
                 SET name = ?,
                 age = ?,
-                groups_id = ?
+                group_id = ?
                 where id = ?
                 """;
 
@@ -75,7 +79,7 @@ public class StudentDaoImpl implements StudentDao {
     @Override
     public void delete(long id) {
         String delete = """
-                DELETE FROM student
+                DELETE FROM students
                 where id = ?;
                 """;
 
@@ -96,7 +100,7 @@ public class StudentDaoImpl implements StudentDao {
     public Student get(long studentId) {
         String get = """
                 SELECT * 
-                FROM student
+                FROM students
                 WHERE ID = ?
                 """;
 
@@ -121,8 +125,8 @@ public class StudentDaoImpl implements StudentDao {
         List<Student> students = new ArrayList<>();
 
         String getAllSQL = """
-                SELECT id, name, age, groups_id
-                FROM STUDENT
+                SELECT id, name, age, group_id
+                FROM STUDENTs
                 """;
 
         try (Connection connection = connectionManager.getConnection(dbProp);

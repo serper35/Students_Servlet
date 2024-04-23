@@ -15,6 +15,4 @@ public interface GroupService {
     GroupDto getGroup(long id);
 
     List<GroupDto> getAllGroups();
-
-
 }

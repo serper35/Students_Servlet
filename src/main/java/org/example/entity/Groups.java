@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,6 +11,7 @@ public class Groups {
     private String faculty;
 
     private int numberOfStudents;
+    private List<Professor> professors = new ArrayList<>();
 
 
     public Groups(long id, String faculty, int numberOfStudents) {
@@ -50,17 +52,25 @@ public class Groups {
         this.numberOfStudents = numberOfStudents;
     }
 
+    public List<Professor> getProfessors() {
+        return professors;
+    }
+
+    public void setProfessors(List<Professor> professors) {
+        this.professors = professors;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Groups groups = (Groups) object;
-        return id == groups.id && numberOfStudents == groups.numberOfStudents && Objects.equals(faculty, groups.faculty);
+        return id == groups.id && numberOfStudents == groups.numberOfStudents && Objects.equals(faculty, groups.faculty) && Objects.equals(professors, groups.professors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, faculty, numberOfStudents);
+        return Objects.hash(id, faculty, numberOfStudents, professors);
     }
 
     @Override
@@ -69,6 +79,7 @@ public class Groups {
                 "id=" + id +
                 ", faculty='" + faculty + '\'' +
                 ", numberOfStudents=" + numberOfStudents +
+                ", professors=" + professors +
                 '}';
     }
 }

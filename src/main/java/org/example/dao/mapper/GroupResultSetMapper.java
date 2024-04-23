@@ -6,5 +6,5 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface GroupResultSetMapper {
-    Groups map (ResultSet resultset) throws SQLException;
+    Groups map (ResultSet resultSet) throws SQLException;
 }

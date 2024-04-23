@@ -5,6 +5,8 @@ import org.example.dao.mapper.GroupResultSetMapper;
 import org.example.dao.mapper.impl.GroupResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Groups;
+import org.example.entity.Professor;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,7 +29,7 @@ public class GroupDaoImpl implements GroupDao {
     @Override
     public void save(Groups group) {
         String saveSQL = """
-                INSERT INTO groups (faculty, number_of_students)
+                INSERT INTO groups (faculty, numberofstudents)
                 values (?, ?)
                 """;
 
@@ -48,7 +50,7 @@ public class GroupDaoImpl implements GroupDao {
         String updateSQL = """
                 UPDATE groups 
                 SET faculty = ?, 
-                number_of_students = ?
+                numberofstudents = ?
                 WHERE ID = ?
                 """;
 
@@ -90,8 +92,8 @@ public class GroupDaoImpl implements GroupDao {
         Groups group = null;
 
         String getSQL = """
-                SELECT id, faculty, number_of_students
-                FROM groups
+                SELECT id, faculty, numberofstudents
+                FROM GROUPS
                 WHERE id = ?
                 """;
 
@@ -101,8 +103,11 @@ public class GroupDaoImpl implements GroupDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 group = groupResultSetMapper.map(resultSet);
+
+                List<Professor> professors = getProfessorsByGroupId(id);
+                group.setProfessors(professors);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении группы из базы данных", e);
@@ -115,7 +120,7 @@ public class GroupDaoImpl implements GroupDao {
         List<Groups> groups = new ArrayList<>();
 
         String getAllSQL = """
-                SELECT id, faculty, number_of_students
+                SELECT id, faculty, numberofstudents
                 FROM GROUPS
                 """;
 
@@ -125,11 +130,39 @@ public class GroupDaoImpl implements GroupDao {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                groups.add(groupResultSetMapper.map(resultSet));
+                Groups group = groupResultSetMapper.map(resultSet);
+
+                List<Professor> professors = getProfessorsByGroupId(group.getId());
+                group.setProfessors(professors);
+
+                groups.add(group);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении групп из базы данных", e);
         }
         return groups;
+    }
+
+    private List<Professor> getProfessorsByGroupId(long groupId) throws SQLException {
+        List<Professor> professorsList = new ArrayList<>();
+        String query = """
+                SELECT Professors.id, Professors.name FROM Professors
+                JOIN Groups_Professors ON Professors.id = Groups_Professors.professor_id
+                WHERE Groups_Professors.group_id = ?
+                """;
+        try (Connection connection = connectionManager.getConnection(dbProp);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, groupId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Professor professor = new Professor();
+                    professor.setId(resultSet.getLong("id"));
+                    professor.setName(resultSet.getString("name"));
+                    professorsList.add(professor);
+                }
+            }
+        }
+        return professorsList;
     }
 }

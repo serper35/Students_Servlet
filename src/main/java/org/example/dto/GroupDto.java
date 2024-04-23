@@ -1,5 +1,9 @@
 package org.example.dto;
 
+import org.example.entity.Professor;
+import org.example.entity.Student;
+
+import java.util.List;
 import java.util.Objects;
 
 public class GroupDto {
@@ -8,6 +12,8 @@ public class GroupDto {
     private String faculty;
 
     private int numberOfStudents;
+
+    private List<Professor> professors;
 
     public long getId() {
         return id;
@@ -31,6 +37,14 @@ public class GroupDto {
 
     public void setNumberOfStudents(int numberOfStudents) {
         this.numberOfStudents = numberOfStudents;
+    }
+
+    public List<Professor> getProfessors() {
+        return professors;
+    }
+
+    public void setProfessors(List<Professor> professors) {
+        this.professors = professors;
     }
 
     @Override

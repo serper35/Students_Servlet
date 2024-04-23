@@ -133,10 +133,10 @@ class GroupDaoImplTest {
 
         assertNotNull(actual);
         assertEquals(group, actual);
-        verify(connectionManager, times(1)).getConnection(anyString());
-        verify(connection, times(1)).prepareStatement(anyString());
-        verify(preparedStatement, times(1)).setLong(1, group.getId());
-        verify(preparedStatement, times(1)).executeQuery();
+        verify(connectionManager, times(2)).getConnection(anyString());
+        verify(connection, times(2)).prepareStatement(anyString());
+        verify(preparedStatement, times(2)).setLong(1, group.getId());
+        verify(preparedStatement, times(2)).executeQuery();
         verify(resultSet, times(2)).next();
         verify(groupResultSetMapper, times(1)).map(resultSet);
     }
@@ -194,10 +194,10 @@ class GroupDaoImplTest {
 
         assertNotNull(groups);
         assertEquals(groups, actual);
-        verify(connectionManager, times(1)).getConnection(anyString());
-        verify(connection, times(1)).prepareStatement(anyString());
-        verify(preparedStatement, times(1)).executeQuery();
-        verify(resultSet, times(2)).next();
+        verify(connectionManager, times(2)).getConnection(anyString());
+        verify(connection, times(2)).prepareStatement(anyString());
+        verify(preparedStatement, times(2)).executeQuery();
+        verify(resultSet, times(3)).next();
         verify(groupResultSetMapper, times(1)).map(resultSet);
     }
 

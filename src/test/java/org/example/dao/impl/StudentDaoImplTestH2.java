@@ -29,8 +29,15 @@ class StudentDaoImplTestH2 {
             Connection connection = connectionManager.getConnection(dbProp);
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("CREATE TABLE GROUPS (id INT PRIMARY KEY AUTO_INCREMENT, faculty VARCHAR(255), number_of_students INT)");
-            statement.executeUpdate("CREATE TABLE STUDENT (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), age INT, groups_id INT, FOREIGN KEY (groups_id) REFERENCES groups(id))");
+            statement.executeUpdate("CREATE TABLE GROUPS (id INT PRIMARY KEY AUTO_INCREMENT, faculty VARCHAR(255), numberofstudents INT)");
+            statement.executeUpdate("CREATE TABLE STUDENTS (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), age INT, group_id INT, FOREIGN KEY (group_id) REFERENCES groups(id))");
+            statement.executeUpdate("CREATE TABLE professors (id bigserial NOT NULL, name varchar(100) NOT NULL, CONSTRAINT professors_pkey PRIMARY KEY (id))");
+            statement.executeUpdate("""
+                    CREATE TABLE groups_professors (group_id int8 NOT NULL,professor_id int8 NOT NULL,
+                    CONSTRAINT groups_professors_pkey PRIMARY KEY (group_id, professor_id),
+                    CONSTRAINT groups_professors_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
+                    CONSTRAINT groups_professors_professor_id_fkey FOREIGN KEY (professor_id) REFERENCES public.professors(id) ON DELETE CASCADE)
+                    """);
 
             connection.close();
         } catch (SQLException e) {
@@ -39,7 +46,7 @@ class StudentDaoImplTestH2 {
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws SQLException {
         groupDao = new GroupDaoImpl(dbProp);
         studentDao = new StudentDaoImpl(dbProp);
 
@@ -48,6 +55,7 @@ class StudentDaoImplTestH2 {
         group.setNumberOfStudents(20);
         groupDao.save(group);
 
+        clearTables();
     }
 
     @AfterAll
@@ -56,8 +64,10 @@ class StudentDaoImplTestH2 {
             Connection connection = connectionManager.getConnection(dbProp);
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("DROP TABLE student");
+            statement.executeUpdate("DROP TABLE students");
+            statement.executeUpdate("DROP TABLE groups_professors");
             statement.executeUpdate("DROP TABLE groups");
+            statement.executeUpdate("DROP TABLE professors");
 
             connection.close();
         } catch (SQLException e) {
@@ -67,7 +77,7 @@ class StudentDaoImplTestH2 {
 
     @Test
     void saveShouldAddStudentToH2Database() {
-        Groups savedGroup = groupDao.get(1L);
+        Groups savedGroup = new Groups(1, "hhh", 5);
 
         Student student = new Student();
         student.setName("vova");
@@ -83,7 +93,7 @@ class StudentDaoImplTestH2 {
 
         try {
             Connection connection = connectionManager.getConnection(dbProp);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM student WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM students WHERE id = ?");
             statement.setLong(1, 1L);
 
             ResultSet resultSet = statement.executeQuery();
@@ -98,7 +108,7 @@ class StudentDaoImplTestH2 {
 
     @Test
     void updateShouldUpdateStudent() {
-        Groups savedGroup = groupDao.get(1L);
+        Groups savedGroup = new Groups(1, "hhh", 5);
 
         Student student = new Student();
         student.setName("vova");
@@ -123,7 +133,7 @@ class StudentDaoImplTestH2 {
 
     @Test
     void deleteShouldDeleteStudent() {
-        Groups savedGroup = groupDao.get(1L);
+        Groups savedGroup = new Groups(1, "hhh", 5);
 
         Student student = new Student();
         student.setName("vova");
@@ -139,7 +149,7 @@ class StudentDaoImplTestH2 {
 
     @Test
     void getShouldReturnStudent() {
-        Groups savedGroup = groupDao.get(1L);
+        Groups savedGroup = new Groups(1, "hhh", 5);
 
         Student student = new Student();
         student.setName("vova");
@@ -156,5 +166,13 @@ class StudentDaoImplTestH2 {
     @Test
     void deleteShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
         assertThrows(SQLException.class, () -> connectionManager.getConnection("fail.properties"));
+    }
+
+    private void clearTables() throws SQLException {
+        Connection connection = connectionManager.getConnection(dbProp);
+        Statement statement = connection.createStatement();
+        statement.execute("DELETE FROM professors");
+        statement.close();
+        connection.close();
     }
 }

@@ -3,9 +3,10 @@ package org.example.dto.mapper;
 import org.example.dao.GroupDao;
 import org.example.dao.impl.GroupDaoImpl;
 import org.example.dto.StudentDto;
+import org.example.dto.mapper.StudentDtoMapper;
 import org.example.entity.Student;
 
-public class StudentDtoMapperImpl implements StudentDtoMapper{
+public class StudentDtoMapperImpl implements StudentDtoMapper {
     String dbProp = "db.properties";
 
     GroupDao groupDao = new GroupDaoImpl(dbProp);

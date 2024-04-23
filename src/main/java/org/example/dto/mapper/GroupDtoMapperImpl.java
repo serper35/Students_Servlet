@@ -1,9 +1,10 @@
 package org.example.dto.mapper;
 
 import org.example.dto.GroupDto;
+import org.example.dto.mapper.GroupDtoMapper;
 import org.example.entity.Groups;
 
-public class GroupDtoMapperImpl implements GroupDtoMapper{
+public class GroupDtoMapperImpl implements GroupDtoMapper {
     @Override
     public Groups mapToGroup(GroupDto groupDto) {
         Groups group = new Groups();
@@ -20,6 +21,7 @@ public class GroupDtoMapperImpl implements GroupDtoMapper{
         groupDto.setId(group.getId());
         groupDto.setFaculty(group.getFaculty());
         groupDto.setNumberOfStudents(group.getNumberOfStudents());
+        groupDto.setProfessors(group.getProfessors());
         return groupDto;
     }
 }
