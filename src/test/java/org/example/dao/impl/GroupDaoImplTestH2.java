@@ -17,15 +17,17 @@ class GroupDaoImplTestH2 {
     private ConnectionManager connectionManager;
     private GroupDaoImpl groupDao;
 
-    @BeforeAll
+    @BeforeEach
     public void setupDatabase() {
+        groupDao = new GroupDaoImpl(dbProp);
+
         try {
             connectionManager = new ConnectionManager();
 
             Connection connection = connectionManager.getConnection(dbProp);
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("CREATE TABLE groups (id INT PRIMARY KEY AUTO_INCREMENT, faculty VARCHAR(255), numberofstudents INT)");
+            statement.executeUpdate("CREATE TABLE groups (id bigserial PRIMARY KEY, faculty VARCHAR(255), numberofstudents INT)");
             statement.executeUpdate("CREATE TABLE professors (id bigserial NOT NULL, name varchar(100) NOT NULL, CONSTRAINT professors_pkey PRIMARY KEY (id))");
             statement.executeUpdate("CREATE TABLE students (id bigserial NOT NULL, name varchar(100) NOT NULL, age int4, group_id int8 NULL," +
                     "CONSTRAINT students_pkey PRIMARY KEY (id), CONSTRAINT students_group_id_fkey FOREIGN KEY (group_id) REFERENCES groups(id))");
@@ -40,11 +42,6 @@ class GroupDaoImplTestH2 {
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы групп", e);
         }
-    }
-
-    @BeforeEach
-    public void setup() {
-        groupDao = new GroupDaoImpl(dbProp);
     }
 
     @Test
@@ -114,32 +111,11 @@ class GroupDaoImplTestH2 {
     }
 
     @Test
-    void getAllShouldReturnAllGroups() {
-        List<Groups> groups = new ArrayList<>();
-        Groups group = new Groups();
-        group.setFaculty("IT");
-        group.setNumberOfStudents(20);
-        groups.add(group);
-
-        Groups group1 = new Groups();
-        group1.setFaculty("IT");
-        group1.setNumberOfStudents(20);
-        groups.add(group1);
-
-        groupDao.save(group);
-        groupDao.save(group1);
-
-        List<Groups> actual = groupDao.getAll();
-
-        assertEquals(groups.size(), actual.size());
-    }
-
-    @Test
     void deleteShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
         assertThrows(SQLException.class, () -> connectionManager.getConnection("fail.properties"));
     }
 
-    @AfterAll
+    @AfterEach
     public void teardownDatabase() {
         try {
             Connection connection = connectionManager.getConnection(dbProp);

@@ -128,9 +128,8 @@ public class GroupDaoImpl implements GroupDao {
                 """;
 
         try (Connection connection = connectionManager.getConnection(dbProp);
-             PreparedStatement statement = connection.prepareStatement(getAllSQL)) {
-
-            ResultSet resultSet = statement.executeQuery();
+             PreparedStatement statement = connection.prepareStatement(getAllSQL);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Groups group = groupResultSetMapper.map(resultSet);

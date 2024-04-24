@@ -10,13 +10,15 @@ public class StudentDtoMapperImpl implements StudentDtoMapper {
     String dbProp = "db.properties";
 
     GroupDao groupDao = new GroupDaoImpl(dbProp);
+
+    private GroupDtoMapper groupDtoMapper = new GroupDtoMapperImpl();
     @Override
     public Student mapToStudent(StudentDto studentDto) {
         Student student = new Student();
         student.setId(studentDto.getId());
         student.setName(studentDto.getName());
         student.setAge(studentDto.getAge());
-        student.setGroup(groupDao.get(studentDto.getGroupId()));
+        student.setGroup(groupDtoMapper.mapToGroup(studentDto.getGroups()));
 
         return student;
     }
@@ -27,7 +29,7 @@ public class StudentDtoMapperImpl implements StudentDtoMapper {
         studentDto.setId(student.getId());
         studentDto.setName(student.getName());
         studentDto.setAge(student.getAge());
-        studentDto.setGroupId(student.getGroup().getId());
+        studentDto.setGroups(groupDtoMapper.mapToGroupDto(student.getGroup()));
 
         return studentDto;
     }

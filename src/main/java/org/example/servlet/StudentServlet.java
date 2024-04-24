@@ -2,7 +2,10 @@ package org.example.servlet;
 
 import com.google.gson.Gson;
 import org.example.dto.StudentDto;
+import org.example.entity.Groups;
+import org.example.service.GroupService;
 import org.example.service.StudentService;
+import org.example.service.impl.GroupsServiceImpl;
 import org.example.service.impl.StudentServiceImpl;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,11 +18,13 @@ import java.io.IOException;
 public class StudentServlet extends HttpServlet {
 
     private StudentService studentService;
+    private GroupService groupService;
     private final Gson gson = new Gson();
 
     @Override
     public void init() throws ServletException {
         studentService = new StudentServiceImpl();
+        groupService = new GroupsServiceImpl();
     }
 
     @Override
@@ -40,7 +45,7 @@ public class StudentServlet extends HttpServlet {
         StudentDto studentDto = new StudentDto();
         studentDto.setName(name);
         studentDto.setAge(age);
-        studentDto.setGroupId(groupId);
+        studentDto.setGroups(groupService.getGroup(groupId));
 
         studentService.saveStudent(studentDto);
 
@@ -58,7 +63,7 @@ public class StudentServlet extends HttpServlet {
         studentDto.setId(id);
         studentDto.setName(name);
         studentDto.setAge(age);
-        studentDto.setGroupId(groupId);
+        studentDto.setGroups(groupService.getGroup(groupId));
 
         studentService.updateStudent(studentDto);
 

@@ -21,7 +21,7 @@ class StudentDaoImplTestH2 {
     private StudentDaoImpl studentDao;
     private GroupDaoImpl groupDao;
 
-    @BeforeAll
+    @BeforeEach
     public void setupDatabase() {
         try {
             connectionManager = new ConnectionManager();
@@ -43,10 +43,7 @@ class StudentDaoImplTestH2 {
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы групп", e);
         }
-    }
 
-    @BeforeEach
-    public void setup() throws SQLException {
         groupDao = new GroupDaoImpl(dbProp);
         studentDao = new StudentDaoImpl(dbProp);
 
@@ -54,11 +51,9 @@ class StudentDaoImplTestH2 {
         group.setFaculty("IT");
         group.setNumberOfStudents(20);
         groupDao.save(group);
-
-        clearTables();
     }
 
-    @AfterAll
+    @AfterEach
     public void teardownDatabase() {
         try {
             Connection connection = connectionManager.getConnection(dbProp);
@@ -166,13 +161,5 @@ class StudentDaoImplTestH2 {
     @Test
     void deleteShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
         assertThrows(SQLException.class, () -> connectionManager.getConnection("fail.properties"));
-    }
-
-    private void clearTables() throws SQLException {
-        Connection connection = connectionManager.getConnection(dbProp);
-        Statement statement = connection.createStatement();
-        statement.execute("DELETE FROM professors");
-        statement.close();
-        connection.close();
     }
 }

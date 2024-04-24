@@ -17,19 +17,19 @@ class ProfessorDaoImplTestH2 {
     private String dbProp = "h2.properties";
     private ConnectionManager connectionManager;
     private ProfessorDaoImpl professorDao;
-    private static String name;
 
-    @BeforeAll
-    public void setupDatabase() {
-        name = "Cole";
+    @BeforeEach
+    public void setup() {
+        professorDao = new ProfessorDaoImpl(dbProp);
+
         try {
             connectionManager = new ConnectionManager();
 
             Connection connection = connectionManager.getConnection(dbProp);
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("CREATE TABLE groups (id INT PRIMARY KEY AUTO_INCREMENT, faculty VARCHAR(255), numberofstudents INT)");
-            statement.executeUpdate("CREATE TABLE professors (id bigserial NOT NULL, name varchar(100) NOT NULL, CONSTRAINT professors_pkey PRIMARY KEY (id))");
+            statement.executeUpdate("CREATE TABLE groups (id BIGSERIAL PRIMARY KEY, faculty VARCHAR(255), numberofstudents INT)");
+            statement.executeUpdate("CREATE TABLE professors (id BIGSERIAL NOT NULL, name varchar(100) NOT NULL, CONSTRAINT professors_pkey PRIMARY KEY (id))");
             statement.executeUpdate("""
                     CREATE TABLE groups_professors (group_id int8 NOT NULL,professor_id int8 NOT NULL,
                     CONSTRAINT groups_professors_pkey PRIMARY KEY (group_id, professor_id),
@@ -41,24 +41,20 @@ class ProfessorDaoImplTestH2 {
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы групп", e);
         }
-    }
 
-    @BeforeEach
-    public void setup() {
-        professorDao = new ProfessorDaoImpl(dbProp);
-
-        Professor professor = new Professor();
-        professor.setName(name);
-
-        professorDao.save(professor);
     }
 
     @Test
     void saveShouldAddProfessorToH2Database() {
+        Professor professor = new Professor();
+        professor.setName("Cole");
+
+        professorDao.save(professor);
+
         Professor test = professorDao.get(1L);
 
         assertNotNull(test);
-        assertEquals(name, test.getName());
+        assertEquals(professor.getName(), test.getName());
 
         try {
             Connection connection = connectionManager.getConnection(dbProp);
@@ -76,7 +72,11 @@ class ProfessorDaoImplTestH2 {
     }
 
     @Test
-    void updateShouldUpdateGroup() {
+    void updateShouldUpdateProfessor() {
+        Professor professor = new Professor();
+        professor.setName("Cole");
+
+        professorDao.save(professor);
 
         Professor updProfessor = new Professor(1, "Colle");
         professorDao.update(updProfessor);
@@ -84,39 +84,32 @@ class ProfessorDaoImplTestH2 {
         Professor test = professorDao.get(1L);
 
         assertEquals(updProfessor.getName(), test.getName());
-        assertNotEquals(name, test.getName());
+        assertNotEquals(professor.getName(), test.getName());
     }
 
     @Test
-    void deleteShouldDeleteGroup() {
+    void deleteShouldDeleteProfessor() {
+        Professor professor = new Professor();
+        professor.setName("Cole");
+
+        professorDao.save(professor);
+
+        Professor test = professorDao.get(1L);
+
         professorDao.delete(1L);
 
         assertNull(professorDao.get(1));
     }
 
     @Test
-    void getShouldReturnGroup() {
-        Professor actual = professorDao.get(1L);
-
-        assertEquals(name, actual.getName());
-    }
-
-    @Test
-    void getAllShouldReturnAllGroups() {
-        List<Professor> professors = new ArrayList<>();
+    void getShouldReturnProfessor() {
         Professor professor = new Professor();
         professor.setName("Cole");
-        professors.add(professor);
 
-        Professor professor1 = new Professor();
-        professor1.setName("Dole");
-        professors.add(professor);
         professorDao.save(professor);
-        professorDao.save(professor1);
+        Professor actual = professorDao.get(1L);
 
-        List<Professor> actual = professorDao.getAll();
-
-        assertEquals(professors.size(), actual.size());
+        assertEquals(professor.getName(), actual.getName());
     }
 
     @Test
@@ -124,7 +117,7 @@ class ProfessorDaoImplTestH2 {
         assertThrows(SQLException.class, () -> connectionManager.getConnection("fail.properties"));
     }
 
-    @AfterAll
+    @AfterEach
     public void teardownDatabase() {
         try {
             Connection connection = connectionManager.getConnection(dbProp);

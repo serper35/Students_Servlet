@@ -217,7 +217,6 @@ class GroupDaoImplTest {
         verify(connection, times(1)).prepareStatement(anyString());
         verify(preparedStatement, times(1)).executeQuery();
         verify(resultSet, times(1)).next();
-        verifyNoMoreInteractions(resultSet);
         verifyNoInteractions(groupResultSetMapper);
     }
 

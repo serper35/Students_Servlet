@@ -1,5 +1,6 @@
 package org.example.dao.mapper;
 
+import org.example.entity.Groups;
 import org.example.entity.Student;
 
 import java.sql.ResultSet;

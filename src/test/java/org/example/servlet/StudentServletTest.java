@@ -1,6 +1,7 @@
 package org.example.servlet;
 
 import org.example.dto.StudentDto;
+import org.example.service.GroupService;
 import org.example.service.StudentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,9 @@ class StudentServletTest {
     private HttpServletResponse response;
     @Mock
     private StudentService studentService;
+
+    @Mock
+    private GroupService groupService;
 
     @Test
     void doGetTest() throws ServletException, IOException {
@@ -55,7 +59,6 @@ class StudentServletTest {
         StudentDto studentDto = new StudentDto();
         studentDto.setName(name);
         studentDto.setAge(age);
-        studentDto.setGroupId(groupId);
 
         studentServlet.doPost(request, response);
 
@@ -78,7 +81,6 @@ class StudentServletTest {
         StudentDto studentDto = new StudentDto();
         studentDto.setName(name);
         studentDto.setAge(age);
-        studentDto.setGroupId(groupId);
         studentDto.setId(id);
 
         studentServlet.doPut(request, response);

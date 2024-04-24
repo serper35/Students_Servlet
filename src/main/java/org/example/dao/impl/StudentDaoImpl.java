@@ -5,6 +5,7 @@ import org.example.dao.mapper.StudentResultSetMapper;
 import org.example.dao.mapper.impl.StudentResultSetMapperImpl;
 import org.example.db.ConnectionManager;
 import org.example.entity.Groups;
+import org.example.entity.Professor;
 import org.example.entity.Student;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -98,8 +99,9 @@ public class StudentDaoImpl implements StudentDao {
 
     @Override
     public Student get(long studentId) {
+        Student student = null;
         String get = """
-                SELECT * 
+                SELECT id, age, name 
                 FROM students
                 WHERE ID = ?
                 """;
@@ -110,14 +112,15 @@ public class StudentDaoImpl implements StudentDao {
             statement.setLong(1, studentId);
 
             ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                return studentResultSetMapper.map(resultSet);
+            if (resultSet.next()) {
+                student = studentResultSetMapper.map(resultSet);
+                student.setGroup(getGroupByStudentId(studentId));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении студента из базы данных", e);
         }
 
-        return null;
+        return student;
     }
 
     @Override
@@ -126,7 +129,7 @@ public class StudentDaoImpl implements StudentDao {
 
         String getAllSQL = """
                 SELECT id, name, age, group_id
-                FROM STUDENTs
+                FROM STUDENTS
                 """;
 
         try (Connection connection = connectionManager.getConnection(dbProp);
@@ -134,11 +137,35 @@ public class StudentDaoImpl implements StudentDao {
             ResultSet resultSet = statement.executeQuery()){
 
             while (resultSet.next()) {
-                students.add(studentResultSetMapper.map(resultSet));
+                long id = resultSet.getLong("id");
+                Student student = studentResultSetMapper.map(resultSet);
+                student.setGroup(getGroupByStudentId(student.getId()));
+                students.add(student);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при получении студентов из базы данных", e);
         }
         return students;
+    }
+
+    private Groups getGroupByStudentId(long groupId) throws SQLException {
+        Groups group = new Groups();
+        String query = """
+                SELECT Groups.id, Groups.faculty, Groups.numberofstudents FROM GROUPS
+                JOIN Students ON Groups.id = Students.group_id
+                WHERE Students.group_id = ?
+                """;
+        try (Connection connection = connectionManager.getConnection(dbProp);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, groupId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    group.setId(resultSet.getLong("id"));
+                    group.setFaculty(resultSet.getString("faculty"));
+                    group.setNumberOfStudents(resultSet.getInt("numberofstudents"));
+                }
+            }
+        }
+        return group;
     }
 }

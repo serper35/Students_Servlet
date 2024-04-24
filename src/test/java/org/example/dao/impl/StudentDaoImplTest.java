@@ -37,7 +37,7 @@ class StudentDaoImplTest {
     @Test
     void saveTestPositive() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
-        Student student = new Student(1L, "Van", 120, (int) group.getId());
+        Student student = new Student(1L, "Van", 120, group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -55,7 +55,7 @@ class StudentDaoImplTest {
     @Test
     void shouldThrowExceptionWhenConnectionIsFailed() throws SQLException {
         Groups group = new Groups(1, "Physical", 10);
-        Student student = new Student(1L, "Van", 120, (int) group.getId());
+        Student student = new Student(1L, "Van", 120, group);
 
         when(connectionManager.getConnection(anyString())).thenThrow(new SQLException("Ошибка при сохранении студента в базу данных"));
 
@@ -64,14 +64,16 @@ class StudentDaoImplTest {
     }
     @Test
     void shouldThrowExceptionWhenGroupDoesntExist() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         assertThrows(RuntimeException.class, () -> studentDao.save(student));
     }
 
     @Test
     void updateTestPositive() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -89,7 +91,8 @@ class StudentDaoImplTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingIsFailing() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenThrow(new SQLException());
 
@@ -99,7 +102,8 @@ class StudentDaoImplTest {
 
     @Test
     void deleteTestPositive() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -114,7 +118,8 @@ class StudentDaoImplTest {
 
     @Test
     void shouldThrowWhenDeletingIsFailed() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenThrow(new  SQLException());
 
@@ -124,7 +129,8 @@ class StudentDaoImplTest {
 
     @Test
     void getTestPositive() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -136,16 +142,17 @@ class StudentDaoImplTest {
 
         assertNotNull(actual);
         assertEquals(student, actual);
-        verify(connectionManager, times(1)).getConnection(anyString());
-        verify(connection, times(1)).prepareStatement(anyString());
-        verify(preparedStatement, times(1)).executeQuery();
-        verify(resultSet, times(1)).next();
+        verify(connectionManager, times(2)).getConnection(anyString());
+        verify(connection, times(2)).prepareStatement(anyString());
+        verify(preparedStatement, times(2)).executeQuery();
+        verify(resultSet, times(2)).next();
         verify(studentResultSetMapper, times(1)).map(resultSet);
     }
 
     @Test
     void getShouldReturnNullWhenStudentDoestnExist() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -166,7 +173,8 @@ class StudentDaoImplTest {
 
     @Test
     void getShouldThrowExceptionWhenConnectionIsClosed() throws SQLException {
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -183,7 +191,8 @@ class StudentDaoImplTest {
     @Test
     void getAllTestPositive() throws SQLException {
         List<Student> students = new ArrayList<>();
-        Student student = new Student(1L, "Van", 120,1);
+        Groups group = new Groups(1, "Physical", 10);
+        Student student = new Student(1L, "Van", 120,group);
         students.add(student);
 
         when(connectionManager.getConnection(anyString())).thenReturn(connection);
@@ -196,10 +205,10 @@ class StudentDaoImplTest {
 
         assertNotNull(students);
         assertEquals(students, actual);
-        verify(connectionManager, times(1)).getConnection(anyString());
-        verify(connection, times(1)).prepareStatement(anyString());
-        verify(preparedStatement, times(1)).executeQuery();
-        verify(resultSet, times(2)).next();
+        verify(connectionManager, times(2)).getConnection(anyString());
+        verify(connection, times(2)).prepareStatement(anyString());
+        verify(preparedStatement, times(2)).executeQuery();
+        verify(resultSet, times(3)).next();
         verify(studentResultSetMapper, times(1)).map(resultSet);
     }
 

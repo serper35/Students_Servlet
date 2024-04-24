@@ -1,21 +1,22 @@
 package org.example.dto;
 
+import org.example.entity.Groups;
+
 import java.util.Objects;
 
 public class StudentDto {
     private long id;
     private String name;
     private int age;
-    private long groupId;
+    private GroupDto groups;
 
     public StudentDto() {
     }
 
-    public StudentDto(long id, String name, int age, long groupId) {
+    public StudentDto(long id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
-        this.groupId = groupId;
     }
 
     public long getId() {
@@ -42,12 +43,12 @@ public class StudentDto {
         this.age = age;
     }
 
-    public long getGroupId() {
-        return groupId;
+    public GroupDto getGroups() {
+        return groups;
     }
 
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
+    public void setGroups(GroupDto groups) {
+        this.groups = groups;
     }
 
     @Override
@@ -55,11 +56,11 @@ public class StudentDto {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         StudentDto that = (StudentDto) object;
-        return id == that.id && age == that.age && groupId == that.groupId && Objects.equals(name, that.name);
+        return id == that.id && age == that.age && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, age, groupId);
+        return Objects.hash(id, name, age);
     }
 }
